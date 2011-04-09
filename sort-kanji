@@ -1,0 +1,32 @@
+#!/usr/bin/env ruby
+
+# Given the output of count-codepoints, produce a sorted list of kanji, most
+# frequent first, in the form:
+#     <glyph>,<codepoint in hex>,<occurrences>
+
+HAN_RANGES = [
+   0x4E00 ..  0x9FFF, # CJK Unified Ideographs
+   0x3400 ..  0x4DBF, # CJK Unified Ideographs Extension A
+   0x9FA6 ..  0x9FCB, # Small Extensions to the URO
+   0xF900 ..  0xFAFF, # CJK Compatibility Ideographs
+  0x20000 .. 0x2A6DF, # CJK Unified Ideographs Extension B
+  0x2A700 .. 0x2B73F, # CJK Unified Ideographs Extension C
+  0x2B740 .. 0x2B81F, # CJK Unified Ideographs Extension D
+  0x2F800 .. 0x2FA1F  # CJK Compatibility Ideographs Supplement
+]
+
+data = []
+
+$stdin.each_line do |line|
+  next unless line =~ /,/
+  fields = line.chomp.split(/,/)
+  codepoint = fields[0].to_i(16)
+  count = fields[1].to_i(10)
+  if HAN_RANGES.any?{ |r| r.include?(codepoint) }
+    data << [codepoint, count]
+  end
+end
+
+data.sort_by{ |_, count| count }.reverse.each do |codepoint, count|
+  puts "%s,%X,%d" % [[codepoint].pack("U"), codepoint, count]
+end
