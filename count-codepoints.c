@@ -1,3 +1,7 @@
+// Count the number of occurrences of each Unicode codepoint read on stdin
+// Print a report with lines of the form:
+//     <codepoint in hex>,<number of occurrences>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
