@@ -7,7 +7,7 @@
 #include <string.h>
 #include <inttypes.h>
 
-#define UNICODE_MAX 0x10FFFF
+#define UNICODE_RANGE 0x110000
 
 uint32_t read_utf8_codepoint(FILE* fp){
   uint32_t result;
@@ -36,21 +36,21 @@ int main(int argc, char** argv) {
   uint64_t* table;
   uint32_t codepoint;
 
-  table = (uint64_t *)malloc(sizeof(uint64_t) * (UNICODE_MAX + 1));
+  table = (uint64_t *)malloc(sizeof(uint64_t) * UNICODE_RANGE);
   if (table == NULL) {
     fprintf(stderr, "Unable to allocate memory.");
     return 1;
   }
-  memset(table, 0, sizeof(uint64_t) * (UNICODE_MAX+ 1));
+  memset(table, 0, sizeof(uint64_t) * UNICODE_RANGE);
 
   while (!feof(stdin)) {
     codepoint = read_utf8_codepoint(stdin);
-    if (codepoint != 0x00 && codepoint != 0xFF && codepoint <= UNICODE_MAX) {
+    if (codepoint != 0x00 && codepoint != 0xFF && codepoint < UNICODE_RANGE) {
       table[codepoint] += 1;
     }
   }
 
-  for (codepoint = 0; codepoint <= UNICODE_MAX; codepoint++) {
+  for (codepoint = 0; codepoint < UNICODE_RANGE; codepoint++) {
     if (table[codepoint] > 0) {
       printf("%X, %" PRId64 "\n", codepoint, table[codepoint]);
     }
