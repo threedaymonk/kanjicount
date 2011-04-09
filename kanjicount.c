@@ -1,5 +1,9 @@
 #include <stdio.h>
-#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+#include <inttypes.h>
+
+#define UNICODE_MAX 0x10FFFF
 
 uint32_t read_utf8_codepoint(FILE* fp){
   uint32_t result;
@@ -25,8 +29,28 @@ uint32_t read_utf8_codepoint(FILE* fp){
 }
 
 int main(int argc, char** argv) {
-  while (!feof(stdin)) {
-    printf("U+%04X\n", read_utf8_codepoint(stdin));
+  uint64_t* table;
+  uint32_t codepoint;
+
+  table = (uint64_t *)malloc(sizeof(uint64_t) * (UNICODE_MAX + 1));
+  if (table == NULL) {
+    fprintf(stderr, "Unable to allocate memory.");
+    return 1;
   }
+  memset(table, 0, sizeof(uint64_t) * (UNICODE_MAX+ 1));
+
+  while (!feof(stdin)) {
+    codepoint = read_utf8_codepoint(stdin);
+    if (codepoint != 0x00 && codepoint != 0xFF) {
+      table[codepoint] += 1;
+    }
+  }
+
+  for (codepoint = 0; codepoint <= UNICODE_MAX; codepoint++) {
+    if (table[codepoint] > 0) {
+      printf("%X, %" PRId64 "\n", codepoint, table[codepoint]);
+    }
+  }
+
   return 0;
 }
