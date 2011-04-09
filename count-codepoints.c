@@ -45,7 +45,7 @@ int main(int argc, char** argv) {
 
   while (!feof(stdin)) {
     codepoint = read_utf8_codepoint(stdin);
-    if (codepoint != 0x00 && codepoint != 0xFF) {
+    if (codepoint != 0x00 && codepoint != 0xFF && codepoint <= UNICODE_MAX) {
       table[codepoint] += 1;
     }
   }
