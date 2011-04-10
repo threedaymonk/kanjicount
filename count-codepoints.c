@@ -13,6 +13,7 @@ int32_t read_utf8_codepoint(FILE* fp){
   int32_t result, byte, i, j, k;
 
 resync:
+  if (0 != feof(fp)) goto fail;
   byte = (int32_t)fgetc(fp);
 
   if (byte < 0x80) return byte;
@@ -28,6 +29,8 @@ resync:
       return result;
     }
   }
+
+fail:
   return -1;
 }
 
